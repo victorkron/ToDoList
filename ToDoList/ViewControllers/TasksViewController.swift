@@ -108,10 +108,7 @@ class TasksViewController: UIViewController {
                     parentTaskSublevelID: parentSublevel
                 )
             } else {
-                
                 taskData = TaskData(name: task.name, amountSubtasks: task.subtasks.count, parentTaskSublevelID: "undef")
-                
-                
             }
             tasksData.append(taskData)
         }
@@ -282,6 +279,21 @@ extension TasksViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         selectedTaskNumber = indexPath.row
         tasksOf()
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+        
+            TasksData.shared.clear()
+            currentControllerTasks.remove(at: indexPath.row)
+            
+            
+            if  self.sublevel != 0,
+                let parentVC = self.navigationController?.viewControllers[self.sublevel - 1] as? TasksViewController,
+                let parentTaskNumber = parentVC.selectedTaskNumber {
+                parentVC.currentControllerTasks[parentTaskNumber].subtasks = self.currentControllerTasks
+            }
+        }
     }
 }
 
